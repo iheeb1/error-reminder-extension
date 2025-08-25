@@ -1,9 +1,6 @@
-// Background service worker for Error Code Translator extension
-
 // Initialize extension
 chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
-      // Set default settings
       chrome.storage.local.set({
         extensionActive: true,
         dailyStats: {
@@ -45,7 +42,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         break;
     }
     
-    return true; // Keep message channel open for async response
+    return true;
   });
   
   // Handle context menu creation
@@ -58,9 +55,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   });
   
   function createContextMenus() {
-    // Remove existing context menus
     chrome.contextMenus.removeAll(() => {
-      // Create context menu for selected text
       chrome.contextMenus.create({
         id: 'analyzeError',
         title: 'Analyze Error Code: "%s"',
@@ -68,7 +63,6 @@ chrome.runtime.onInstalled.addListener((details) => {
         documentUrlPatterns: ['http://*/*', 'https://*/*']
       });
       
-      // Create context menu for page action
       chrome.contextMenus.create({
         id: 'toggleExtension',
         title: 'Toggle Error Detection',
@@ -77,7 +71,6 @@ chrome.runtime.onInstalled.addListener((details) => {
     });
   }
   
-  // Handle context menu clicks
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     switch (info.menuItemId) {
       case 'analyzeError':
@@ -91,7 +84,6 @@ chrome.runtime.onInstalled.addListener((details) => {
   });
   
   function analyzeSelectedError(selectedText, tabId) {
-    // Send selected text to content script for analysis
     chrome.tabs.sendMessage(tabId, {
       action: 'analyzeText',
       text: selectedText
@@ -99,18 +91,15 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
   
   function toggleExtension(tabId) {
-    // Get current state and toggle
     chrome.storage.local.get(['extensionActive'], (result) => {
       const newState = !result.extensionActive;
       
       chrome.storage.local.set({ extensionActive: newState });
       
-      // Send message to content script
       chrome.tabs.sendMessage(tabId, {
         action: newState ? 'enable' : 'disable'
       });
       
-      // Show notification
       chrome.notifications.create({
         type: 'basic',
         iconUrl: 'icon48.png',
@@ -121,7 +110,6 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
   
   function handleErrorLogging(errorData) {
-    // Log error for analytics and learning
     const timestamp = new Date().toISOString();
     const logEntry = {
       ...errorData,
@@ -129,7 +117,6 @@ chrome.runtime.onInstalled.addListener((details) => {
       url: errorData.url || 'unknown'
     };
     
-    // Store in local storage (you could also send to analytics service)
     chrome.storage.local.get(['errorLog'], (result) => {
       const errorLog = result.errorLog || [];
       errorLog.push(logEntry);
@@ -145,7 +132,6 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
   
   function handleStackOverflowSearch(query) {
-    // Create new tab with Stack Overflow search
     const searchUrl = `https://stackoverflow.com/search?q=${encodeURIComponent(query)}`;
     chrome.tabs.create({ url: searchUrl });
     
@@ -158,7 +144,6 @@ chrome.runtime.onInstalled.addListener((details) => {
       const today = new Date().toDateString();
       let dailyStats = result.dailyStats || { date: today, stats: { errorsDetected: 0, solutionsProvided: 0 } };
       
-      // Reset stats if it's a new day
       if (dailyStats.date !== today) {
         dailyStats = { date: today, stats: { errorsDetected: 0, solutionsProvided: 0 } };
       }

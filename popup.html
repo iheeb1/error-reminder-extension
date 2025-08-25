@@ -281,8 +281,17 @@
                 const today = new Date().toDateString();
                 if (result.dailyStats.date === today) {
                     stats = result.dailyStats.stats;
-                    updateStatsDisplay();
+                } else {
+                    // Reset stats for new day
+                    stats = { errorsDetected: 0, solutionsProvided: 0 };
+                    chrome.storage.local.set({
+                        dailyStats: {
+                            date: today,
+                            stats: stats
+                        }
+                    });
                 }
+                updateStatsDisplay();
             }
         });
         
@@ -383,6 +392,19 @@
                 });
             }
         });
+        
+        // Update stats from storage periodically
+        setInterval(() => {
+            chrome.storage.local.get(['dailyStats'], (result) => {
+                if (result.dailyStats) {
+                    const today = new Date().toDateString();
+                    if (result.dailyStats.date === today) {
+                        stats = result.dailyStats.stats;
+                        updateStatsDisplay();
+                    }
+                }
+            });
+        }, 2000);
         
         // Add CSS animation for notification
         const style = document.createElement('style');

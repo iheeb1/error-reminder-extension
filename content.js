@@ -1,3 +1,4 @@
+// Error patterns for different languages and frameworks
 const ERROR_PATTERNS = {
     // HTTP status codes
     http: {
@@ -60,24 +61,77 @@ const ERROR_PATTERNS = {
   
   // Initialize error detection
   function init() {
-    // Scan existing text for errors
-    scanForErrors();
+    // Check if extension is active
+    chrome.storage.local.get(['extensionActive'], (result) => {
+      const isActive = result.extensionActive !== false; // Default to true
+      
+      if (isActive) {
+        // Scan existing text for errors
+        scanForErrors();
+        
+        // Listen for console errors
+        interceptConsoleErrors();
+        
+        // Monitor DOM changes for new errors
+        observeDOMChanges();
+        
+        // Send initial stats update
+        chrome.runtime.sendMessage({
+          action: 'updateStats',
+          errorsFound: document.querySelectorAll('.error-code-highlight').length
+        });
+      }
+    });
     
-    // Listen for console errors
-    interceptConsoleErrors();
-    
-    // Monitor DOM changes for new errors
-    observeDOMChanges();
+    // Listen for extension toggle messages
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.action === 'enable') {
+        location.reload();
+      } else if (message.action === 'disable') {
+        // Remove all highlights
+        document.querySelectorAll('.error-code-highlight').forEach(el => {
+          el.outerHTML = el.textContent;
+        });
+        // Remove notifications
+        document.querySelectorAll('.error-notification').forEach(el => {
+          el.remove();
+        });
+      } else if (message.action === 'test') {
+        // Inject test errors for demonstration
+        const testDiv = document.createElement('div');
+        testDiv.style.cssText = 'padding: 20px; background: #f8f9fa; border: 1px solid #dee2e6; margin: 20px; border-radius: 8px;';
+        testDiv.innerHTML = `
+          <h3>Test Errors (injected by extension)</h3>
+          <p>HTTP Error: 404 Not Found - The requested resource could not be found.</p>
+          <p>JavaScript Error: TypeError: Cannot read property 'name' of undefined</p>
+          <p>Node.js Error: ECONNREFUSED - Connection refused by server</p>
+          <p>React Warning: Each child in a list should have a unique "key" prop</p>
+        `;
+        document.body.insertBefore(testDiv, document.body.firstChild);
+        
+        // Scan for the new test errors
+        setTimeout(() => {
+          scanForErrors();
+        }, 100);
+      }
+    });
   }
   
   function scanForErrors() {
     const textNodes = getTextNodes(document.body);
     
     textNodes.forEach(node => {
+      // Skip nodes that are already processed or are part of our extension
+      if (node.parentNode?.classList?.contains('error-code-highlight') ||
+          node.parentNode?.closest('.error-tooltip, .error-notification')) {
+        return;
+      }
+      
       let text = node.textContent;
       let hasErrors = false;
       let newHTML = text;
       
+      // Check each error pattern category
       Object.keys(ERROR_PATTERNS).forEach(category => {
         const pattern = ERROR_PATTERNS[category];
         const matches = text.match(pattern.pattern);
@@ -103,6 +157,7 @@ const ERROR_PATTERNS = {
       }
     });
     
+    // Add event listeners to newly highlighted errors
     addErrorEventListeners();
   }
   
@@ -113,9 +168,16 @@ const ERROR_PATTERNS = {
       NodeFilter.SHOW_TEXT,
       {
         acceptNode: function(node) {
-          // Skip script and style elements
+          // Skip script, style elements and our own extension elements
           const parent = node.parentElement;
-          if (parent && (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE')) {
+          if (parent && (
+            parent.tagName === 'SCRIPT' || 
+            parent.tagName === 'STYLE' ||
+            parent.classList.contains('error-code-highlight') ||
+            parent.classList.contains('error-tooltip') ||
+            parent.classList.contains('error-notification') ||
+            parent.closest('.error-tooltip, .error-notification')
+          )) {
             return NodeFilter.FILTER_REJECT;
           }
           return node.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
@@ -137,10 +199,12 @@ const ERROR_PATTERNS = {
     if (category === 'http') {
       return categoryData.codes[errorCode];
     } else {
+      // For text-based errors, try exact match first, then partial match
       if (categoryData.codes[errorCode]) {
         return categoryData.codes[errorCode];
       }
       
+      // Check for partial matches
       for (const key in categoryData.codes) {
         if (errorCode.includes(key) || key.includes(errorCode)) {
           return categoryData.codes[key];
@@ -194,6 +258,7 @@ const ERROR_PATTERNS = {
     
     document.body.appendChild(tooltipElement);
     
+    // Position tooltip
     const rect = element.getBoundingClientRect();
     tooltipElement.style.left = rect.left + 'px';
     tooltipElement.style.top = (rect.bottom + 10) + 'px';
@@ -212,19 +277,39 @@ const ERROR_PATTERNS = {
     event.preventDefault();
     const errorCode = event.target.dataset.error;
     searchStackOverflow(errorCode);
+    
+    // Update statistics
+    chrome.runtime.sendMessage({
+      action: 'updateStats',
+      solutionsUsed: 1
+    });
   }
   
+  // Global functions for tooltip buttons
   window.searchStackOverflow = function(errorCode) {
     const query = encodeURIComponent(errorCode + " solution");
     window.open(`https://stackoverflow.com/search?q=${query}`, '_blank');
+    
+    // Update statistics
+    chrome.runtime.sendMessage({
+      action: 'updateStats',
+      solutionsUsed: 1
+    });
   };
   
   window.searchDocs = function(errorCode) {
     const query = encodeURIComponent(errorCode + " documentation");
     window.open(`https://developer.mozilla.org/en-US/search?q=${query}`, '_blank');
+    
+    // Update statistics
+    chrome.runtime.sendMessage({
+      action: 'updateStats',
+      solutionsUsed: 1
+    });
   };
   
   function interceptConsoleErrors() {
+    // Store original console methods
     const originalError = console.error;
     const originalWarn = console.warn;
     
@@ -238,6 +323,7 @@ const ERROR_PATTERNS = {
       return originalWarn.apply(console, args);
     };
     
+    // Listen for unhandled errors
     window.addEventListener('error', (event) => {
       showErrorNotification({
         type: 'javascript',
@@ -252,6 +338,7 @@ const ERROR_PATTERNS = {
   function handleConsoleMessage(type, args) {
     const message = args.join(' ');
     
+    // Check if message contains error patterns
     Object.keys(ERROR_PATTERNS).forEach(category => {
       const pattern = ERROR_PATTERNS[category];
       const matches = message.match(pattern.pattern);
@@ -274,6 +361,7 @@ const ERROR_PATTERNS = {
   }
   
   function showErrorNotification(errorData) {
+    // Create floating notification
     const notification = document.createElement('div');
     notification.className = 'error-notification';
     notification.innerHTML = `
@@ -294,12 +382,14 @@ const ERROR_PATTERNS = {
     
     document.body.appendChild(notification);
     
+    // Auto-remove after 10 seconds
     setTimeout(() => {
       if (notification.parentNode) {
         notification.remove();
       }
     }, 10000);
     
+    // Add close button functionality
     notification.querySelector('.error-notification-close').onclick = () => {
       notification.remove();
     };
@@ -318,9 +408,14 @@ const ERROR_PATTERNS = {
       
       mutations.forEach((mutation) => {
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+          // Check if new text nodes were added (avoid scanning our own highlights)
           mutation.addedNodes.forEach(node => {
             if (node.nodeType === Node.TEXT_NODE || 
-                (node.nodeType === Node.ELEMENT_NODE && node.textContent)) {
+                (node.nodeType === Node.ELEMENT_NODE && 
+                 node.textContent && 
+                 !node.classList?.contains('error-code-highlight') &&
+                 !node.classList?.contains('error-tooltip') &&
+                 !node.classList?.contains('error-notification'))) {
               shouldScan = true;
             }
           });
@@ -328,8 +423,20 @@ const ERROR_PATTERNS = {
       });
       
       if (shouldScan) {
+        // Debounce scanning to prevent infinite loops
         clearTimeout(window.scanTimeout);
-        window.scanTimeout = setTimeout(scanForErrors, 500);
+        window.scanTimeout = setTimeout(() => {
+          // Temporarily disconnect observer during scan
+          observer.disconnect();
+          scanForErrors();
+          // Reconnect after scan
+          setTimeout(() => {
+            observer.observe(document.body, {
+              childList: true,
+              subtree: true
+            });
+          }, 100);
+        }, 1000);
       }
     });
     
