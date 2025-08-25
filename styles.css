@@ -1,0 +1,257 @@
+/* Error Code Translator Styles */
+
+.error-code-highlight {
+    background: linear-gradient(120deg, #ff6b6b22 0%, #ee5a5222 100%) !important;
+    border: 1px solid #ff6b6b !important;
+    border-radius: 3px !important;
+    padding: 2px 4px !important;
+    cursor: pointer !important;
+    position: relative !important;
+    font-weight: 500 !important;
+    color: #c92a2a !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    margin: 0 1px !important;
+  }
+  
+  .error-code-highlight:hover {
+    background: linear-gradient(120deg, #ff6b6b33 0%, #ee5a5233 100%) !important;
+    border-color: #e03131 !important;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  .error-tooltip {
+    position: fixed !important;
+    background: #ffffff !important;
+    border: 2px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+    padding: 0 !important;
+    z-index: 10000 !important;
+    max-width: 350px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    animation: errorTooltipFadeIn 0.2s ease-out !important;
+  }
+  
+  @keyframes errorTooltipFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .error-tooltip-header {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+    color: white !important;
+    padding: 12px 16px !important;
+    font-weight: 600 !important;
+    border-radius: 6px 6px 0 0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  
+  .error-tooltip-close {
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: background 0.2s ease !important;
+  }
+  
+  .error-tooltip-close:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  .error-tooltip-name {
+    font-weight: 600 !important;
+    color: #343a40 !important;
+    padding: 12px 16px 8px 16px !important;
+    font-size: 15px !important;
+  }
+  
+  .error-tooltip-description {
+    color: #6c757d !important;
+    padding: 0 16px 12px 16px !important;
+    line-height: 1.5 !important;
+  }
+  
+  .error-tooltip-actions {
+    padding: 12px 16px !important;
+    border-top: 1px solid #e9ecef !important;
+    display: flex !important;
+    gap: 8px !important;
+  }
+  
+  .error-action-btn {
+    background: linear-gradient(135deg, #4dabf7, #339af0) !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 12px !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    flex: 1 !important;
+    text-align: center !important;
+  }
+  
+  .error-action-btn:hover {
+    background: linear-gradient(135deg, #339af0, #228be6) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(52, 171, 240, 0.3) !important;
+  }
+  
+  .error-notification {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    background: #ffffff !important;
+    border: 2px solid #ff6b6b !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+    z-index: 10001 !important;
+    max-width: 400px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    animation: errorNotificationSlideIn 0.3s ease-out !important;
+  }
+  
+  @keyframes errorNotificationSlideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .error-notification-header {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+    color: white !important;
+    padding: 12px 16px !important;
+    font-weight: 600 !important;
+    border-radius: 6px 6px 0 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 14px !important;
+  }
+  
+  .error-icon {
+    font-size: 16px !important;
+  }
+  
+  .error-notification-close {
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    margin-left: auto !important;
+    padding: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    transition: background 0.2s ease !important;
+  }
+  
+  .error-notification-close:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  .error-notification-body {
+    padding: 16px !important;
+  }
+  
+  .error-name {
+    font-weight: 600 !important;
+    color: #343a40 !important;
+    margin-bottom: 8px !important;
+    font-size: 15px !important;
+  }
+  
+  .error-description {
+    color: #6c757d !important;
+    margin-bottom: 12px !important;
+    line-height: 1.5 !important;
+    font-size: 14px !important;
+  }
+  
+  .error-actions {
+    display: flex !important;
+    gap: 8px !important;
+  }
+  
+  .error-actions button {
+    background: linear-gradient(135deg, #4dabf7, #339af0) !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 12px !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    flex: 1 !important;
+  }
+  
+  .error-actions button:hover {
+    background: linear-gradient(135deg, #339af0, #228be6) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Console integration styles */
+  .console-error-detected {
+    border-left: 4px solid #ff6b6b !important;
+    background: rgba(255, 107, 107, 0.1) !important;
+    padding-left: 8px !important;
+  }
+  
+  /* Dark theme support */
+  @media (prefers-color-scheme: dark) {
+    .error-tooltip {
+      background: #2d3748 !important;
+      border-color: #4a5568 !important;
+      color: #e2e8f0 !important;
+    }
+    
+    .error-tooltip-name {
+      color: #e2e8f0 !important;
+    }
+    
+    .error-tooltip-description {
+      color: #a0aec0 !important;
+    }
+    
+    .error-notification {
+      background: #2d3748 !important;
+      color: #e2e8f0 !important;
+    }
+    
+    .error-name {
+      color: #e2e8f0 !important;
+    }
+    
+    .error-description {
+      color: #a0aec0 !important;
+    }
+  }

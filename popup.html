@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Code Translator</title>
+    <style>
+        body {
+            width: 350px;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+        
+        .feature:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .feature-icon {
+            font-size: 20px;
+            margin-right: 12px;
+            width: 32px;
+            text-align: center;
+        }
+        
+        .feature-text {
+            flex: 1;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .feature-desc {
+            font-size: 11px;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .stats-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+        
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .footer {
+            padding: 16px 20px;
+            text-align: center;
+            font-size: 10px;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: rgba(76, 175, 80, 0.8);
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Error Code Translator</h1>
+        <p>Automatically detect and explain error codes</p>
+    </div>
+    
+    <div class="content">
+        <div class="toggle-container">
+            <span class="toggle-label">Extension Active</span>
+            <div class="toggle-switch active" id="extensionToggle">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stats-title">Today's Detection Stats</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="errorsDetected">0</div>
+                    <div class="stat-label">Errors Found</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="solutionsProvided">0</div>
+                    <div class="stat-label">Solutions</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-text">
+                <div class="feature-title">Auto Detection</div>
+                <div class="feature-desc">Automatically highlights error codes on any webpage</div>
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div class="feature-icon">🔍</div>
+            <div class="feature-text">
+                <div class="feature-title">Stack Overflow Integration</div>
+                <div class="feature-desc">One-click search for solutions and discussions</div>
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div class="feature-icon">📖</div>
+            <div class="feature-text">
+                <div class="feature-title">Documentation Links</div>
+                <div class="feature-desc">Quick access to official documentation</div>
+            </div>
+        </div>
+        
+        <div class="feature">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-text">
+                <div class="feature-title">Console Monitoring</div>
+                <div class="feature-desc">Real-time error detection in browser console</div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" id="testExtension">Test Extension</button>
+            <button class="btn btn-primary" id="clearData">Clear Data</button>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Version 1.0.0 | Error Code Translator
+    </div>
+    
+    <script>
+        // Extension popup functionality
+        let isActive = true;
+        let stats = {
+            errorsDetected: 0,
+            solutionsProvided: 0
+        };
+        
+        // Load saved settings and stats
+        chrome.storage.local.get(['extensionActive', 'dailyStats'], (result) => {
+            if (result.extensionActive !== undefined) {
+                isActive = result.extensionActive;
+                updateToggleState();
+            }
+            
+            if (result.dailyStats) {
+                const today = new Date().toDateString();
+                if (result.dailyStats.date === today) {
+                    stats = result.dailyStats.stats;
+                    updateStatsDisplay();
+                }
+            }
+        });
+        
+        // Toggle extension on/off
+        document.getElementById('extensionToggle').addEventListener('click', () => {
+            isActive = !isActive;
+            updateToggleState();
+            
+            // Save state
+            chrome.storage.local.set({ extensionActive: isActive });
+            
+            // Send message to content script
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    action: isActive ? 'enable' : 'disable'
+                });
+            });
+        });
+        
+        function updateToggleState() {
+            const toggle = document.getElementById('extensionToggle');
+            if (isActive) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+        }
+        
+        function updateStatsDisplay() {
+            document.getElementById('errorsDetected').textContent = stats.errorsDetected;
+            document.getElementById('solutionsProvided').textContent = stats.solutionsProvided;
+        }
+        
+        // Test extension functionality
+        document.getElementById('testExtension').addEventListener('click', () => {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    action: 'test',
+                    testErrors: [
+                        '404 Not Found',
+                        'TypeError: Cannot read property',
+                        'ECONNREFUSED',
+                        'SyntaxError: Unexpected token'
+                    ]
+                });
+            });
+            
+            // Show test notification
+            showNotification('Test errors injected! Check the webpage for highlighted errors.');
+        });
+        
+        // Clear extension data
+        document.getElementById('clearData').addEventListener('click', () => {
+            chrome.storage.local.clear(() => {
+                stats = { errorsDetected: 0, solutionsProvided: 0 };
+                updateStatsDisplay();
+                showNotification('Extension data cleared!');
+            });
+        });
+        
+        function showNotification(message) {
+            // Simple notification system
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background: rgba(76, 175, 80, 0.9);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 12px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Listen for messages from content script
+        chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+            if (message.action === 'updateStats') {
+                stats.errorsDetected += message.errorsFound || 0;
+                stats.solutionsProvided += message.solutionsUsed || 0;
+                updateStatsDisplay();
+                
+                // Save daily stats
+                const today = new Date().toDateString();
+                chrome.storage.local.set({
+                    dailyStats: {
+                        date: today,
+                        stats: stats
+                    }
+                });
+            }
+        });
+        
+        // Add CSS animation for notification
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

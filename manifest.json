@@ -1,0 +1,40 @@
+{
+    "manifest_version": 3,
+    "name": "Error Code Translator",
+    "version": "1.0.0",
+    "description": "Automatically detect error codes, explain them, and provide solutions with Stack Overflow integration",
+    "permissions": [
+      "activeTab",
+      "storage",
+      "scripting"
+    ],
+    "host_permissions": [
+      "http://*/*",
+      "https://*/*"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"],
+        "css": ["styles.css"]
+      }
+    ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_title": "Error Code Translator"
+    },
+    "icons": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    },
+    "web_accessible_resources": [
+      {
+        "resources": ["tooltip.html", "styles.css"],
+        "matches": ["<all_urls>"]
+      }
+    ]
+  }
